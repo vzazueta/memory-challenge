@@ -1,0 +1,14 @@
+.grid { 
+    display: grid; 
+    grid-template-columns: auto auto;
+    grid-template-rows: auto auto;
+}
+
+label[for=tiles] {
+    display: block;
+    font: 1rem 'Fira Sans', sans-serif;
+}
+
+input, label[for=tiles] {
+    margin: .4rem 0;
+}
