@@ -1,15 +1,13 @@
 let number_of_tiles = 4;
-let tiles_number_input = document.getElementById("tilesAmount");
+let cards_folder = new Folder("../cards/all");
+let back_cover = new File("../cards/back_covers/Emerald.png");
 let generate_board_button = document.getElementById("generateBoard");
 let board_grid = document.getElementById("board");
 
 tiles_number_input.value = number_of_tiles;
+cards_folder.close();
 
 generate_board_button.onclick = function generateBoard(){
-    number_of_tiles = tiles_number_input.value;
-    if(number_of_tiles < 4 || number_of_tiles > 10) tiles_number_input.value = number_of_tiles = 4;
-    else if(number_of_tiles % 2 != 0) tiles_number_input.value = number_of_tiles = number_of_tiles-1;
-    
     init();
 }
 
@@ -26,23 +24,29 @@ function createBoard(n){
         else css_instruction += "auto";
     }
 
-    tiles_array = createTiles();
+    tiles_array = tilesArray(n);
 
     board_grid.style.backgroundColor = '#2196F3';
     board_grid.style.gridTemplateColumns = css_instruction;
 }
 
-function createTiles(){
+function tilesArray(n){
     let array = [];
+    cards_folder.reset();
 
-    
+    for(let i=0; i<(n^2); i++){
+        let tile = function(){
+            let img = cards_folder.next();
+        }
+
+        array.push(tile);
+    }
+
+    cards_folder.close();
 
     return array;
 }
 
-function insertImage(){
-
-}
 
 function flipImage(){
 
