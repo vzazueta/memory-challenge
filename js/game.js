@@ -1,4 +1,5 @@
 let cards_folder = new Folder("../cards/all");
+let back_cover_path = "../cards/back_covers/Emerald.png";
 let start_button = document.getElementById("startButton");
 let img_array = document.getElementsByTagName("img");
 let card_pairs_indeces;
@@ -46,7 +47,7 @@ function findInMap(value){
 }
 
 function flipCard(){
-    
+    if()
 }
 
 function randnum(min, max) {
