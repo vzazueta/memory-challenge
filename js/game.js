@@ -1,57 +1,54 @@
-let n = 4;
 let cards_folder = new Folder("../cards/all");
 let start_button = document.getElementById("startButton");
-let board_grid = document.getElementById("board");
 let img_array = document.getElementsByTagName("img");
-let same_cards_map;
+let card_pairs_indeces;
 
 cards_folder.close();
 
-function randnum(max, min) {
-    return Math.floor(Math.random() * ((max-1) - (min+1) + 1)) + min;
-}
-
 function start(){
-    init();
-}
-
-function init(){
+    addEventsToImgs();
     shuffle();
 }
 
+function addEventsToImgs(){
+    for(let i in img_array){
+        i.addEventListener("click", function() {
+            flipCard();
+        });
+    }
+}
+
 function shuffle(){
-    for(let i=0; i<(n^2)/2; i++){
+    card_pairs_indeces = {};
+    let i=0;
+
+    while(card_pairs_indeces.length != 8){
         if(findInMap(i)) continue;
+        
+        let j = 0;
 
-        let j = findSlot(n^2, i);
-
-        same_cards_map[i] = j;
-    }
-}
-
-function findSlot(max, min){
-    let j = randnum(max, min);
-    let isTaken = findInMap(j);
-
-    while(isTaken){
-        j = randnum(max, min);
-        isTaken = findInMap(j);
-    }
-
-    return j;
-}
-
-function findInMap(value) {
-    for(let v of same_cards_map.values()) {
-        if (v === value) { 
-          return true; 
+        while(findInMap(j)){
+            j = randum(i+1, 16);
         }
-      }  
-    
+
+        card_pairs_indeces[i] = j;
+
+        i++;
+    }
+}
+
+function findInMap(value){
+    for(let [k, v] in card_pairs_indeces){
+        if(k === value || v === value) return true;
+    }
+
     return false;
 }
 
-
 function flipCard(){
+    
+}
 
+function randnum(min, max) {
+    return Math.floor(Math.random() * ((max-1) - min + 1)) + min;
 }
