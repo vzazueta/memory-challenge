@@ -1,53 +1,57 @@
-let number_of_tiles = 4;
+let n = 4;
 let cards_folder = new Folder("../cards/all");
-let back_cover = new File("../cards/back_covers/Emerald.png");
-let generate_board_button = document.getElementById("generateBoard");
+let start_button = document.getElementById("startButton");
 let board_grid = document.getElementById("board");
+let img_array = document.getElementsByTagName("img");
+let same_cards_map;
 
-tiles_number_input.value = number_of_tiles;
 cards_folder.close();
 
-generate_board_button.onclick = function generateBoard(){
+function randnum(max, min) {
+    return Math.floor(Math.random() * ((max-1) - (min+1) + 1)) + min;
+}
+
+function start(){
     init();
 }
 
 function init(){
-    createBoard(number_of_tiles);
+    shuffle();
 }
 
-function createBoard(n){
-    let css_instruction = "";
-    let tiles_array;
+function shuffle(){
+    for(let i=0; i<(n^2)/2; i++){
+        if(findInMap(i)) continue;
 
-    for(let i=0; i<n; i++){
-        if(i < n-1) css_instruction += "auto ";
-        else css_instruction += "auto";
+        let j = findSlot(n^2, i);
+
+        same_cards_map[i] = j;
+    }
+}
+
+function findSlot(max, min){
+    let j = randnum(max, min);
+    let isTaken = findInMap(j);
+
+    while(isTaken){
+        j = randnum(max, min);
+        isTaken = findInMap(j);
     }
 
-    tiles_array = tilesArray(n);
-
-    board_grid.style.backgroundColor = '#2196F3';
-    board_grid.style.gridTemplateColumns = css_instruction;
+    return j;
 }
 
-function tilesArray(n){
-    let array = [];
-    cards_folder.reset();
-
-    for(let i=0; i<(n^2); i++){
-        let tile = function(){
-            let img = cards_folder.next();
+function findInMap(value) {
+    for(let v of same_cards_map.values()) {
+        if (v === value) { 
+          return true; 
         }
-
-        array.push(tile);
-    }
-
-    cards_folder.close();
-
-    return array;
+      }  
+    
+    return false;
 }
 
 
-function flipImage(){
+function flipCard(){
 
 }
