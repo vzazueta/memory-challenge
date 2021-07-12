@@ -1,65 +1,68 @@
 let cards_folder_path = "./cards/all/";
-let back_cover_path = "./cards/back_covers/Emerald.png";
+let PNG = ".png";
+let back_cover_path = "./cards/back_covers/Emerald" + PNG;
 let start_button = document.getElementById("startButton");
 let img_array = document.getElementsByTagName("img");
 let card_pairs_indeces;
+let keys_and_images;
+let used_images;
 
 let card_paths_array = [
-    cards_folder_path + "C2.png",
-    cards_folder_path + "C3",
-    cards_folder_path + "C4",
-    cards_folder_path + "C5",
-    cards_folder_path + "C6",
-    cards_folder_path + "C7",
-    cards_folder_path + "C8",
-    cards_folder_path + "C9",
-    cards_folder_path + "C10",
-    cards_folder_path + "CA",
-    cards_folder_path + "CJ",
-    cards_folder_path + "CK",
-    cards_folder_path + "CQ",
+    cards_folder_path + "C2" + PNG,
+    cards_folder_path + "C3" + PNG,
+    cards_folder_path + "C4" + PNG,
+    cards_folder_path + "C5" + PNG,
+    cards_folder_path + "C6" + PNG,
+    cards_folder_path + "C7" + PNG,
+    cards_folder_path + "C8" + PNG,
+    cards_folder_path + "C9" + PNG,
+    cards_folder_path + "C10" + PNG,
+    cards_folder_path + "CA" + PNG,
+    cards_folder_path + "CJ" + PNG,
+    cards_folder_path + "CK" + PNG,
+    cards_folder_path + "CQ" + PNG,
 
-    cards_folder_path + "D2",
-    cards_folder_path + "D3",
-    cards_folder_path + "D4",
-    cards_folder_path + "D5",
-    cards_folder_path + "D6",
-    cards_folder_path + "D7",
-    cards_folder_path + "D8",
-    cards_folder_path + "D9",
-    cards_folder_path + "D10",
-    cards_folder_path + "DA",
-    cards_folder_path + "DJ",
-    cards_folder_path + "DK",
-    cards_folder_path + "DQ",
+    cards_folder_path + "D2" + PNG,
+    cards_folder_path + "D3" + PNG,
+    cards_folder_path + "D4" + PNG,
+    cards_folder_path + "D5" + PNG,
+    cards_folder_path + "D6" + PNG,
+    cards_folder_path + "D7" + PNG,
+    cards_folder_path + "D8" + PNG,
+    cards_folder_path + "D9" + PNG,
+    cards_folder_path + "D10" + PNG,
+    cards_folder_path + "DA" + PNG,
+    cards_folder_path + "DJ" + PNG,
+    cards_folder_path + "DK" + PNG,
+    cards_folder_path + "DQ" + PNG,
 
-    cards_folder_path + "H2",
-    cards_folder_path + "H3",
-    cards_folder_path + "H4",
-    cards_folder_path + "H5",
-    cards_folder_path + "H6",
-    cards_folder_path + "H7",
-    cards_folder_path + "H8",
-    cards_folder_path + "H9",
-    cards_folder_path + "H10",
-    cards_folder_path + "HA",
-    cards_folder_path + "HJ",
-    cards_folder_path + "HK",
-    cards_folder_path + "HQ",
+    cards_folder_path + "H2" + PNG,
+    cards_folder_path + "H3" + PNG,
+    cards_folder_path + "H4" + PNG,
+    cards_folder_path + "H5" + PNG,
+    cards_folder_path + "H6" + PNG,
+    cards_folder_path + "H7" + PNG,
+    cards_folder_path + "H8" + PNG,
+    cards_folder_path + "H9" + PNG,
+    cards_folder_path + "H10" + PNG,
+    cards_folder_path + "HA" + PNG,
+    cards_folder_path + "HJ" + PNG,
+    cards_folder_path + "HK" + PNG,
+    cards_folder_path + "HQ" + PNG,
 
-    cards_folder_path + "S2",
-    cards_folder_path + "S3",
-    cards_folder_path + "S4",
-    cards_folder_path + "S5",
-    cards_folder_path + "S6",
-    cards_folder_path + "S7",
-    cards_folder_path + "S8",
-    cards_folder_path + "S9",
-    cards_folder_path + "S10",
-    cards_folder_path + "SA",
-    cards_folder_path + "SJ",
-    cards_folder_path + "SK",
-    cards_folder_path + "SQ"
+    cards_folder_path + "S2" + PNG,
+    cards_folder_path + "S3" + PNG,
+    cards_folder_path + "S4" + PNG,
+    cards_folder_path + "S5" + PNG,
+    cards_folder_path + "S6" + PNG,
+    cards_folder_path + "S7" + PNG,
+    cards_folder_path + "S8" + PNG,
+    cards_folder_path + "S9" + PNG,
+    cards_folder_path + "S10" + PNG,
+    cards_folder_path + "SA" + PNG,
+    cards_folder_path + "SJ" + PNG,
+    cards_folder_path + "SK" + PNG,
+    cards_folder_path + "SQ" + PNG
 ];
 
 start_button.addEventListener("click", start);
@@ -69,11 +72,14 @@ for(let i=0; i<img_array.length; i++){
 }
 
 function start(){
+    this.innerHTML = "Restart";
     shuffle();
 }
 
 function shuffle(){
     card_pairs_indeces = {};
+    keys_and_images = {};
+    used_images = [];
     let i=0;
 
     while(card_pairs_indeces.length < 8){
@@ -85,6 +91,7 @@ function shuffle(){
             j = randnum(i+1, 16);
         }
 
+        randomizeImage(i);
         card_pairs_indeces[i++] = j;
     }
 }
@@ -97,15 +104,41 @@ function findInMap(value){
     return false;
 }
 
-function flipCard(){
-    if(this.src === back_cover_path) {
+function randomizeImage(id){
+    let image_id = randnum(0, 52);
+
+    if(used_images.includes(image_id)){
+        while(used_images.includes(image_id)){
+            image_id = randnum(0, 52);
+        }
+    }
+
+    used_images.push(image_id);
+
+    keys_and_images[id] = card_paths_array[image_id]
+}
+
+function flipCard(){ 
+    let back_cover = back_cover_path.replace('.', '');
+
+    if(this.src.includes(back_cover)) {
         let id = parseInt(this.id);
+
+        console.log(id);
         
         for(let [k, v] in card_pairs_indeces) {
-            if(v === id) id = k;
+            if(v === id) {
+                id = k;
+                console.log("new id: "+id);
+                break;
+            }
         }
 
-        this.src = card_paths_array[id];
+        console.log("outside loop");
+        
+        console.log(keys_and_images[id]);
+
+        this.src = keys_and_images[id];
     } else {
         this.src = back_cover_path;
     }
