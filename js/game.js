@@ -1,8 +1,16 @@
-let cards_folder = new Folder("../cards/all");
+let cards_folder_path = "../cards/all";
 let back_cover_path = "../cards/back_covers/Emerald.png";
 let start_button = document.getElementById("startButton");
 let img_array = document.getElementsByTagName("img");
 let card_pairs_indeces;
+
+const fs = require('fs');
+
+fs.readdirSync(cards_folder_path).forEach(file => {
+  
+});
+
+start_button.addEventListener("click", start);
 
 cards_folder.close();
 
@@ -13,10 +21,7 @@ function start(){
 
 function addEventsToImgs(){
     for(let i in img_array){
-        i.addEventListener("click", function() {
-            flipCard();
-        });
-    }
+        i.addEventListener("click", flipCard);
 }
 
 function shuffle(){
@@ -47,7 +52,16 @@ function findInMap(value){
 }
 
 function flipCard(){
-    if()
+    let image = this;
+
+    if(image.src === back_cover_path){
+        let id = parseInt(image.id);
+
+        
+        
+    } else {
+        image.src = back_cover_path;
+    }
 }
 
 function randnum(min, max) {
