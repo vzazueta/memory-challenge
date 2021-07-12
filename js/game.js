@@ -1,5 +1,5 @@
-let cards_folder_path = "../cards/all/";
-let back_cover_path = "../cards/back_covers/Emerald.png";
+let cards_folder_path = "./cards/all/";
+let back_cover_path = "./cards/back_covers/Emerald.png";
 let start_button = document.getElementById("startButton");
 let img_array = document.getElementsByTagName("img");
 let card_pairs_indeces;
@@ -76,7 +76,7 @@ function shuffle(){
     card_pairs_indeces = {};
     let i=0;
 
-    while(card_pairs_indeces.length != 8){
+    while(card_pairs_indeces.length < 8){
         if(findInMap(i)) continue;
         
         let j = 0;
