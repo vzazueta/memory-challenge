@@ -13,17 +13,14 @@ fs.readdirSync(cards_folder_path).forEach(path => {
 
 start_button.addEventListener("click", start);
 
-cards_folder.close();
+for(let i in img_array){
+    i.addEventListener("click", flipCard);
+}
 
 function start(){
-    addEventsToImgs();
     shuffle();
 }
 
-function addEventsToImgs(){
-    for(let i in img_array){
-        i.addEventListener("click", flipCard);
-}
 
 function shuffle(){
     card_pairs_indeces = {};
@@ -35,12 +32,10 @@ function shuffle(){
         let j = 0;
 
         while(findInMap(j) && j != 0){
-            j = randum(i+1, 16);
+            j = randnum(i+1, 16);
         }
 
-        card_pairs_indeces[i] = j;
-
-        i++;
+        card_pairs_indeces[i++] = j;
     }
 }
 
@@ -53,14 +48,18 @@ function findInMap(value){
 }
 
 function flipCard(){
-    if(this.src === back_cover_path){
+    if(this.src === back_cover_path) {
         let id = parseInt(this.id);
 
-        
+        if(id > 7){
+            for(let [k, v] in card_pairs_indeces){
+                if(v === id) id = k;
+            }
+        }
 
-        image.src = card_paths_array[id];
+        this.src = card_paths_array[id];
     } else {
-        image.src = back_cover_path;
+        this.src = back_cover_path;
     }
 }
 
