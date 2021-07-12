@@ -1,26 +1,76 @@
-let cards_folder_path = "../cards/all";
+let cards_folder_path = "../cards/all/";
 let back_cover_path = "../cards/back_covers/Emerald.png";
 let start_button = document.getElementById("startButton");
 let img_array = document.getElementsByTagName("img");
-let card_paths_array = [];
 let card_pairs_indeces;
 
-const fs = require('fs');
+let card_paths_array = [
+    cards_folder_path + "C2.png",
+    cards_folder_path + "C3",
+    cards_folder_path + "C4",
+    cards_folder_path + "C5",
+    cards_folder_path + "C6",
+    cards_folder_path + "C7",
+    cards_folder_path + "C8",
+    cards_folder_path + "C9",
+    cards_folder_path + "C10",
+    cards_folder_path + "CA",
+    cards_folder_path + "CJ",
+    cards_folder_path + "CK",
+    cards_folder_path + "CQ",
 
-fs.readdirSync(cards_folder_path).forEach(path => {
-  card_paths_array.push(path);
-});
+    cards_folder_path + "D2",
+    cards_folder_path + "D3",
+    cards_folder_path + "D4",
+    cards_folder_path + "D5",
+    cards_folder_path + "D6",
+    cards_folder_path + "D7",
+    cards_folder_path + "D8",
+    cards_folder_path + "D9",
+    cards_folder_path + "D10",
+    cards_folder_path + "DA",
+    cards_folder_path + "DJ",
+    cards_folder_path + "DK",
+    cards_folder_path + "DQ",
+
+    cards_folder_path + "H2",
+    cards_folder_path + "H3",
+    cards_folder_path + "H4",
+    cards_folder_path + "H5",
+    cards_folder_path + "H6",
+    cards_folder_path + "H7",
+    cards_folder_path + "H8",
+    cards_folder_path + "H9",
+    cards_folder_path + "H10",
+    cards_folder_path + "HA",
+    cards_folder_path + "HJ",
+    cards_folder_path + "HK",
+    cards_folder_path + "HQ",
+
+    cards_folder_path + "S2",
+    cards_folder_path + "S3",
+    cards_folder_path + "S4",
+    cards_folder_path + "S5",
+    cards_folder_path + "S6",
+    cards_folder_path + "S7",
+    cards_folder_path + "S8",
+    cards_folder_path + "S9",
+    cards_folder_path + "S10",
+    cards_folder_path + "SA",
+    cards_folder_path + "SJ",
+    cards_folder_path + "SK",
+    cards_folder_path + "SQ"
+];
 
 start_button.addEventListener("click", start);
 
-for(let i in img_array){
-    i.addEventListener("click", flipCard);
+for(let i=0; i<img_array.length; i++){
+    img_array[i].addEventListener("click", flipCard);
 }
 
 function start(){
     shuffle();
 }
-
 
 function shuffle(){
     card_pairs_indeces = {};
@@ -50,11 +100,9 @@ function findInMap(value){
 function flipCard(){
     if(this.src === back_cover_path) {
         let id = parseInt(this.id);
-
-        if(id > 7){
-            for(let [k, v] in card_pairs_indeces){
-                if(v === id) id = k;
-            }
+        
+        for(let [k, v] in card_pairs_indeces) {
+            if(v === id) id = k;
         }
 
         this.src = card_paths_array[id];
