@@ -1,12 +1,12 @@
 let cards_folder_path = "./cards/all/";
 let PNG = ".png";
 let back_cover_path = "./cards/back_covers/Emerald" + PNG;
-let start_button = document.getElementById("startButton");
+let start_button = document.getElementById("start-button");
 let img_array = document.getElementsByClassName("card");
 let card_pairs_indeces;
 let keys_and_images;
 let used_images;
-let score = 0;
+let score = document.getElementById("score");
 
 let card_paths_array = [
     cards_folder_path + "C2" + PNG,
@@ -70,6 +70,7 @@ start_button.addEventListener("click", start);
 
 function start(){
     this.innerHTML = "Restart Game";
+    score = 0;
 
     for(let i=0; i<img_array.length; i++){
         let image = img_array[i];
@@ -145,7 +146,12 @@ function flipCard(){
 }
 
 function checkCards(){
-    
+
+}
+
+function changeScore(add){
+    if(add) score++;
+    else score--;
 }
 
 function randnum(min, max) {
