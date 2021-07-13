@@ -6,7 +6,7 @@ let img_array = document.getElementsByClassName("card");
 let card_pairs_indeces;
 let keys_and_images;
 let used_images;
-let score = document.getElementById("score");
+let score_text = document.getElementById("score");
 
 let card_paths_array = [
     cards_folder_path + "C2" + PNG,
@@ -150,8 +150,10 @@ function checkCards(){
 }
 
 function changeScore(add){
-    if(add) score++;
-    else score--;
+    let score = parseInt(score_text.innerHTML);
+    
+    if(add) score_text.innerHTML = ++score;
+    else score_text.innerHTML = --score;
 }
 
 function randnum(min, max) {
