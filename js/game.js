@@ -6,6 +6,7 @@ let img_array = document.getElementsByClassName("card");
 let card_pairs_indeces;
 let keys_and_images;
 let used_images;
+let score = 0;
 
 let card_paths_array = [
     cards_folder_path + "C2" + PNG,
@@ -141,6 +142,10 @@ function flipCard(){
     } else {
         this.src = back_cover_path;
     }
+}
+
+function checkCards(){
+    
 }
 
 function randnum(min, max) {
