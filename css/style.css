@@ -2,18 +2,34 @@
     display: grid; 
     grid-template-columns: auto auto auto auto;
     grid-gap: 15px;
-    background-color: #2196F3;
     padding: 15px;
+    background-color: #2196F3;
+    width: 60%;
+    float: left;
 }
 
 .grid > .card {
     background-color: rgba(255, 255, 255, 0.8);
-    padding: 0px 10px;
+    padding: 3% 10%;
     width: 51px;
     height: 78px;
+    width: 40%;
+    height: 90%;
 }
 
-#logotype {
+#info {
+    position: relative;
+    left: 10%;
+    top: 2px;
+    float: right;
     display: block;
+}
+
+
+#logotype {
     max-width: 300px;
+}
+
+#description {
+
 }

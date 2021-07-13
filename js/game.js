@@ -2,7 +2,7 @@ let cards_folder_path = "./cards/all/";
 let PNG = ".png";
 let back_cover_path = "./cards/back_covers/Emerald" + PNG;
 let start_button = document.getElementById("startButton");
-let img_array = document.getElementsByTagName("img");
+let img_array = document.getElementsByClassName("card");
 let card_pairs_indeces;
 let keys_and_images;
 let used_images;
@@ -67,12 +67,15 @@ let card_paths_array = [
 
 start_button.addEventListener("click", start);
 
-for(let i=0; i<img_array.length; i++){
-    img_array[i].addEventListener("click", flipCard);
-}
-
 function start(){
-    this.innerHTML = "Restart";
+    this.innerHTML = "Restart Game";
+
+    for(let i=0; i<img_array.length; i++){
+        let image = img_array[i];
+        image.src = back_cover_path;
+        image.addEventListener("click", flipCard);
+    }
+
     shuffle();
 }
 
@@ -80,42 +83,44 @@ function shuffle(){
     card_pairs_indeces = {};
     keys_and_images = {};
     used_images = [];
-    let i=0;
+    let key = 0;
+    let length = 0;
 
-    while(card_pairs_indeces.length < 8){
-        if(findInMap(i)) continue;
-        
-        let j = 0;
-
-        while(findInMap(j) && j != 0){
-            j = randnum(i+1, 16);
+    while(length < 8){
+        if(findInMap(key)) {
+            key++;
+            continue;
         }
+        
+        let value = -1;
 
-        randomizeImage(i);
-        card_pairs_indeces[i++] = j;
+        while(value === -1 || findInMap(value)) value = randnum(key+1, 15);
+        
+        setRandomImage(key);
+        card_pairs_indeces[key++] = value;
+        length++;
     }
 }
 
-function findInMap(value){
-    for(let [k, v] in card_pairs_indeces){
-        if(k === value || v === value) return true;
+function findInMap(index){
+    let entries = Object.entries(card_pairs_indeces);
+    
+    for(let [k, v] of entries) {
+        if(k === index || v === index) return true;
     }
 
     return false;
 }
 
-function randomizeImage(id){
-    let image_id = randnum(0, 52);
+function setRandomImage(key){
+    let image_id = randnum(0, 51);
 
-    if(used_images.includes(image_id)){
-        while(used_images.includes(image_id)){
-            image_id = randnum(0, 52);
-        }
+    while(used_images.includes(image_id)){
+        image_id = randnum(0, 51);
     }
-
+    
     used_images.push(image_id);
-
-    keys_and_images[id] = card_paths_array[image_id]
+    keys_and_images[key] = card_paths_array[image_id];
 }
 
 function flipCard(){ 
@@ -123,20 +128,14 @@ function flipCard(){
 
     if(this.src.includes(back_cover)) {
         let id = parseInt(this.id);
-
-        console.log(id);
+        let entries = Object.entries(card_pairs_indeces);
         
-        for(let [k, v] in card_pairs_indeces) {
+        for(let [k, v] of entries) {
             if(v === id) {
                 id = k;
-                console.log("new id: "+id);
                 break;
-            }
+            } else if(k === id) break;
         }
-
-        console.log("outside loop");
-        
-        console.log(keys_and_images[id]);
 
         this.src = keys_and_images[id];
     } else {
@@ -145,5 +144,5 @@ function flipCard(){
 }
 
 function randnum(min, max) {
-    return Math.floor(Math.random() * ((max-1) - min + 1) + min);
+    return Math.floor(Math.random() * (max - min + 1) + min);
 }
