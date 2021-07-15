@@ -59,7 +59,7 @@ let card_paths_array = [
     cards_folder_path + "SQ" + PNG
 ];
 
-import { setScoreZero, changeScore } from "./score.js";
+import { setScoreZero, changeScore, finishGame } from "./score.js";
 import { print, randnum } from "./misc.js";
 
 let back_cover_path = "./cards/back_covers/Emerald" + PNG;
@@ -96,7 +96,7 @@ function shuffle(){
     let key = 0;
     let length = 0;
 
-    while(length < 8){
+    while(length < 8) {
         if(findInMap(key)) {
             key++;
             continue;
@@ -156,65 +156,41 @@ function flipCard(){
         } else if(k === png_id) break;
     }
         
-    changeCardState(card_id, true);
     this.src = keys_and_images[png_id];
     this.removeEventListener("click", flipCard);
     cards_flipped++;
     
 
-    if(cards_flipped % 2 === 0) checkPairs(card_id);
-    else previous_card = this;
+    if(cards_flipped % 2 === 0) {
+        actual_card = this;
+        checkPairs();
+    } else previous_card = this;
 }
 
-function checkPairs(id){
-    print("Checking pairs");
+function checkPairs(){
     for(let pair of existing_pairs){
         if(!pair.found) {
             let c1 = pair.card_one;
             let c2 = pair.card_two;
 
-            if(c1[0] === id) {
-                print("matched id c1");
-
-                if(c1[1] === previous_card) {
-                    print("Found pair with c1");
-
+            if(actual_card === c1 ||
+                actual_card === c2) {
+                if(previous_card === c1 ||
+                    previous_card === c2) {
                     pair.found = true;
                     changeScore(true);
                 } else {
-                    print("Did not find pair with c1");
-                    
                     wrong_pair = true;
-                    c1[2] = false;
-                    cards_flipped-=2;
-                    changeScore(false);
-                }
-                print("cards flipped: "+cards_flipped);
-
-                break;
-            } else if(c2[0] === id) {
-                print("matched id c2");
-                actual_card = c2[1];
-
-                if(c1[1] === previous_card) {
-                    print("Found pair with c2");
-                    pair.found = true;
-                    changeScore(true);
-                } else {
-                    print("Did not find pair with c2");
-                    
-                    wrong_pair = true;
-                    c2[2] = false;
                     cards_flipped-=2;
                     changeScore(false);
                 }
                 
-                print("cards flipped: "+cards_flipped);
-                
-                break;
+                return;
             }
         }
     }
+
+    finishGame();
 }
 
 function createPairs(){
@@ -222,19 +198,11 @@ function createPairs(){
 
     for(let [k, v] of k_and_v) {
         let pair = {
-            card_one : [k, img_array[k], false],
-            card_two : [v, img_array[v], false],
-            src : keys_and_images[k],
+            card_one : img_array[k],
+            card_two : img_array[v],
             found : false
         }
 
         existing_pairs.push(pair);
-    }
-}
-
-function changeCardState(id, new_state){
-    for(let pair of existing_pairs){
-        if(pair.card_one[0] === id) pair.card_one[2] = new_state;
-        else if(pair.card_two[0] === id) pair.card_two[2] = new_state;
     }
 }

@@ -10,3 +10,7 @@ export function changeScore(add){
     if(add) score_text.innerHTML = ++score;
     else score_text.innerHTML = --score;
 }
+
+export function finishGame(){
+    
+}
