@@ -60,11 +60,13 @@ let card_paths_array = [
 ];
 
 import { setScoreZero, changeScore } from "./score.js";
+import { print, randnum } from "./misc.js";
 
 let back_cover_path = "./cards/back_covers/Emerald" + PNG;
 let start_button = document.getElementById("start-button");
 let img_array = document.getElementsByClassName("card");
-let previous_card;
+let previous_card, actual_card;
+let wrong_pair = false;
 let cards_flipped;
 let card_pairs_indeces;
 let keys_and_images;
@@ -134,69 +136,85 @@ function setRandomImage(key){
 }
 
 function flipCard(){ 
-    let back_cover = back_cover_path.replace('.', '');
-    let id = parseInt(this.id);
+    //let back_cover = back_cover_path.replace('.', '');
+    let card_id = parseInt(this.id);
+    let entries = Object.entries(card_pairs_indeces);
+    let png_id = card_id;
 
-    if(this.src.includes(back_cover)) {
-        let entries = Object.entries(card_pairs_indeces);
-        
-        for(let [k, v] of entries) {
-            if(v === id) {
-                id = k;
-                break;
-            } else if(k === id) break;
-        }
-
-        this.src = keys_and_images[id];
-        changeCardState(id, true);
-        this.removeEventListener("click", flipCard);
-        cards_flipped++;
+    if(wrong_pair){
+        previous_card.src = back_cover_path;
+        actual_card.src = back_cover_path;
+        actual_card.addEventListener("click", flipCard);
+        previous_card.addEventListener("click", flipCard);
+        wrong_pair = false;
     }
 
-    if(cards_flipped % 2 === 0) checkPairs(id);
+    for(let [k, v] of entries) {
+        if(v === png_id) {
+            png_id = k;
+            break;
+        } else if(k === png_id) break;
+    }
+        
+    changeCardState(card_id, true);
+    this.src = keys_and_images[png_id];
+    this.removeEventListener("click", flipCard);
+    cards_flipped++;
+    
+
+    if(cards_flipped % 2 === 0) checkPairs(card_id);
     else previous_card = this;
 }
 
 function checkPairs(id){
+    print("Checking pairs");
     for(let pair of existing_pairs){
         if(!pair.found) {
             let c1 = pair.card_one;
             let c2 = pair.card_two;
 
-            if(c1[0] === id) { 
-                if(c1[2]) {
-                    if(c2[2]) {
-                        pair.found = true;
-                        changeScore(true);
-                    } else {
-                        c1[1].src = back_cover_path;
-                        c1[1].addEventListener("click", flipCard);
-                        c1[2] = false;
-                        changeScore(false);
-                    } 
+            if(c1[0] === id) {
+                print("matched id c1");
+
+                if(c1[1] === previous_card) {
+                    print("Found pair with c1");
+
+                    pair.found = true;
+                    changeScore(true);
+                } else {
+                    print("Did not find pair with c1");
+                    
+                    wrong_pair = true;
+                    c1[2] = false;
+                    cards_flipped-=2;
+                    changeScore(false);
                 }
+                print("cards flipped: "+cards_flipped);
 
                 break;
             } else if(c2[0] === id) {
-                if(c2[2]) { 
-                    if(c1[2] === true) {
-                        pair.found = true;
-                        changeScore(true);
-                    } else {
-                        c2[1].src = back_cover_path;
-                        c2[1].addEventListener("click", flipCard);
-                        changeScore(false);
-                    }
-                }
+                print("matched id c2");
+                actual_card = c2[1];
 
+                if(c1[1] === previous_card) {
+                    print("Found pair with c2");
+                    pair.found = true;
+                    changeScore(true);
+                } else {
+                    print("Did not find pair with c2");
+                    
+                    wrong_pair = true;
+                    c2[2] = false;
+                    cards_flipped-=2;
+                    changeScore(false);
+                }
+                
+                print("cards flipped: "+cards_flipped);
+                
                 break;
             }
         }
     }
-}
-
-function randnum(min, max) {
-    return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
 function createPairs(){
