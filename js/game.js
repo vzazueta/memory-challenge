@@ -66,7 +66,8 @@ let back_cover_path = "./cards/back_covers/Emerald" + PNG;
 let start_button = document.getElementById("start-button");
 let img_array = document.getElementsByClassName("card");
 let previous_card, actual_card;
-let wrong_pair = false;
+let wrong_pair;
+let play_again;
 let cards_flipped;
 let card_pairs_indeces;
 let keys_and_images;
@@ -76,13 +77,15 @@ let existing_pairs;
 start_button.addEventListener("click", start);
 
 function start(){
-    this.innerHTML = "Restart Game";
+    start_button.innerText = "Restart Game";
     setScoreZero();
     cards_flipped = 0;
     card_pairs_indeces = {};
     keys_and_images = {};
     used_images = [];
     existing_pairs = [];
+    wrong_pair = false;
+    play_again = false;
 
     for(let image of img_array){
         image.src = back_cover_path;
@@ -175,22 +178,27 @@ function checkPairs(){
 
             if(actual_card === c1 ||
                 actual_card === c2) {
+                
                 if(previous_card === c1 ||
                     previous_card === c2) {
                     pair.found = true;
                     changeScore(true);
                 } else {
-                    wrong_pair = true;
                     cards_flipped-=2;
+                    wrong_pair = true;
                     changeScore(false);
+                }
+
+                if(cards_flipped === 16) {
+                    play_again = finishGame();
+
+                    if(play_again) start();
                 }
                 
                 return;
             }
         }
     }
-
-    finishGame();
 }
 
 function createPairs(){
