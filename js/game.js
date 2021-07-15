@@ -1,12 +1,5 @@
 let cards_folder_path = "./cards/all/";
 let PNG = ".png";
-let back_cover_path = "./cards/back_covers/Emerald" + PNG;
-let start_button = document.getElementById("start-button");
-let img_array = document.getElementsByClassName("card");
-let card_pairs_indeces;
-let keys_and_images;
-let used_images;
-let score_text = document.getElementById("score");
 
 let card_paths_array = [
     cards_folder_path + "C2" + PNG,
@@ -66,14 +59,32 @@ let card_paths_array = [
     cards_folder_path + "SQ" + PNG
 ];
 
+import { setScoreZero, changeScore, finishGame } from "./score.js";
+import { print, randnum } from "./misc.js";
+
+let back_cover_path = "./cards/back_covers/Emerald" + PNG;
+let start_button = document.getElementById("start-button");
+let img_array = document.getElementsByClassName("card");
+let previous_card, actual_card;
+let wrong_pair = false;
+let cards_flipped;
+let card_pairs_indeces;
+let keys_and_images;
+let used_images;
+let existing_pairs;
+
 start_button.addEventListener("click", start);
 
 function start(){
     this.innerHTML = "Restart Game";
-    score = 0;
+    setScoreZero();
+    cards_flipped = 0;
+    card_pairs_indeces = {};
+    keys_and_images = {};
+    used_images = [];
+    existing_pairs = [];
 
-    for(let i=0; i<img_array.length; i++){
-        let image = img_array[i];
+    for(let image of img_array){
         image.src = back_cover_path;
         image.addEventListener("click", flipCard);
     }
@@ -82,13 +93,10 @@ function start(){
 }
 
 function shuffle(){
-    card_pairs_indeces = {};
-    keys_and_images = {};
-    used_images = [];
     let key = 0;
     let length = 0;
 
-    while(length < 8){
+    while(length < 8) {
         if(findInMap(key)) {
             key++;
             continue;
@@ -102,6 +110,8 @@ function shuffle(){
         card_pairs_indeces[key++] = value;
         length++;
     }
+
+    createPairs();
 }
 
 function findInMap(index){
@@ -126,36 +136,73 @@ function setRandomImage(key){
 }
 
 function flipCard(){ 
-    let back_cover = back_cover_path.replace('.', '');
+    //let back_cover = back_cover_path.replace('.', '');
+    let card_id = parseInt(this.id);
+    let entries = Object.entries(card_pairs_indeces);
+    let png_id = card_id;
 
-    if(this.src.includes(back_cover)) {
-        let id = parseInt(this.id);
-        let entries = Object.entries(card_pairs_indeces);
+    if(wrong_pair){
+        previous_card.src = back_cover_path;
+        actual_card.src = back_cover_path;
+        actual_card.addEventListener("click", flipCard);
+        previous_card.addEventListener("click", flipCard);
+        wrong_pair = false;
+    }
+
+    for(let [k, v] of entries) {
+        if(v === png_id) {
+            png_id = k;
+            break;
+        } else if(k === png_id) break;
+    }
         
-        for(let [k, v] of entries) {
-            if(v === id) {
-                id = k;
-                break;
-            } else if(k === id) break;
+    this.src = keys_and_images[png_id];
+    this.removeEventListener("click", flipCard);
+    cards_flipped++;
+    
+
+    if(cards_flipped % 2 === 0) {
+        actual_card = this;
+        checkPairs();
+    } else previous_card = this;
+}
+
+function checkPairs(){
+    for(let pair of existing_pairs){
+        if(!pair.found) {
+            let c1 = pair.card_one;
+            let c2 = pair.card_two;
+
+            if(actual_card === c1 ||
+                actual_card === c2) {
+                if(previous_card === c1 ||
+                    previous_card === c2) {
+                    pair.found = true;
+                    changeScore(true);
+                } else {
+                    wrong_pair = true;
+                    cards_flipped-=2;
+                    changeScore(false);
+                }
+                
+                return;
+            }
+        }
+    }
+
+    finishGame();
+}
+
+function createPairs(){
+    let k_and_v = Object.entries(card_pairs_indeces);
+
+    for(let [k, v] of k_and_v) {
+        let pair = {
+            card_one : img_array[k],
+            card_two : img_array[v],
+            found : false
         }
 
-        this.src = keys_and_images[id];
-    } else {
-        this.src = back_cover_path;
+        existing_pairs.push(pair);
     }
-}
-
-function checkCards(){
-
-}
-
-function changeScore(add){
-    let score = parseInt(score_text.innerHTML);
-    
-    if(add) score_text.innerHTML = ++score;
-    else score_text.innerHTML = --score;
-}
-
-function randnum(min, max) {
-    return Math.floor(Math.random() * (max - min + 1) + min);
 }
