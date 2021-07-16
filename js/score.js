@@ -3,6 +3,7 @@ import { print } from './misc.js';
 let score_text = document.getElementById("score");
 let username;
 let final_score;
+let game_number = 1;
 /*let xhr = new XMLHttpRequest();
 let site = "http://something.com";
 
@@ -42,14 +43,11 @@ export function finishGame(){
 function sendToDatabase(){
     //xhr.open('POST', site);
 
-    let user_and_score = {
-        user : username,
-        score : final_score
-    }
+    let gameNo = game_number++;
+    let gameNumberString = "game " + gameNo;
+    let data = "Game Number: " + gameNo + "\n" +
+                "Username :" + username + "\n" +
+                "Score :" + final_score;
 
-    localStorage.setItem("game_info", user_and_score);
-
-    let game = localStorage.getItem("game_info");
-
-    print(game.user+", "+game.score);
+    localStorage.setItem(gameNumberString, data);
 }
