@@ -3,14 +3,15 @@ import { print } from './misc.js';
 let score_text = document.getElementById("score");
 let username;
 let final_score;
-//let xhr = new XMLHttpRequest();
-//let site = "http://something.com";
+/*let xhr = new XMLHttpRequest();
+let site = "http://something.com";
 
 xhr.onreadystatechange = function(){
     if (xhr.readyState === 4){
         print("Score uploaded succesfully!");
     }
 };
+*/
 
 export function setScoreZero(){
     score_text.innerText = "0";
@@ -47,4 +48,8 @@ function sendToDatabase(){
     }
 
     localStorage.setItem("game_info", user_and_score);
+
+    let game = localStorage.getItem("game_info");
+
+    print(game.user+", "+game.score);
 }
