@@ -3,8 +3,9 @@ import { print } from './misc.js';
 let score_text = document.getElementById("score");
 let username;
 let final_score;
-let game_number = 1;
-/*let xhr = new XMLHttpRequest();
+
+/*
+let xhr = new XMLHttpRequest();
 let site = "http://something.com";
 
 xhr.onreadystatechange = function(){
