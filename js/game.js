@@ -202,8 +202,16 @@ function flipCard(){
     } else previous_card = this;
 }
 
+/*
+    If previous_card and actual_card are in the same
+    Pair object, it is considered a found pair.
+    Otherwise, wrong_pair boolean is set to 'true'.
+    In any case, the score is updated for good or ill.
+    When the 16 cards are flipped, the finishGame()
+    function is activated.
+*/
 function checkPairs(){
-    for(let pair of existing_pairs){
+    for(let pair of existing_pairs) {
         if(!pair.found) {
             let c1 = pair.card_one;
             let c2 = pair.card_two;
@@ -222,7 +230,7 @@ function checkPairs(){
                 }
 
                 if(cards_flipped === 16) {
-                    if(finishGame()) 
+                    if(finishGame())
                         start();
                 }
                 
@@ -232,6 +240,10 @@ function checkPairs(){
     }
 }
 
+/*
+    Creates and inserts a Pair object to its
+    respective array.
+*/
 function createPair(card_one_id, card_two_id){
     existing_pairs.push({
         card_one : img_array[card_one_id],
