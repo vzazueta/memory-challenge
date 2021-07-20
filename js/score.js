@@ -26,8 +26,7 @@ export function changeScore(add){
     else score_text.innerHTML = --score;
 }
 
-export function finishGame(){
-    print("The game is done");
+export function finishGame() {
     final_score = parseInt(score_text.innerText);
     username = prompt("Finished!\n\n"+
                     "Please, enter your username:", 

@@ -1,7 +1,7 @@
 let cards_folder_path = "./cards/all/";
 let PNG = ".png";
 
-let card_paths_array = [
+let card_paths = [
     cards_folder_path + "C2" + PNG,
     cards_folder_path + "C3" + PNG,
     cards_folder_path + "C4" + PNG,
@@ -69,19 +69,20 @@ let previous_card, actual_card;
 let wrong_pair;
 let play_again;
 let cards_flipped;
-let card_pairs_indeces;
-let keys_and_images;
 let used_images;
 let existing_pairs;
 
 start_button.addEventListener("click", start);
 
-function start(){
-    start_button.innerText = "Restart Game";
+/* 
+    Whenever the 'Start New Game' is clicked or
+    the player finishes the game and chooses to
+    play again, this function will reset every
+    variable to default or zero.
+*/
+function start() {
     setScoreZero();
     cards_flipped = 0;
-    card_pairs_indeces = {};
-    keys_and_images = {};
     used_images = [];
     existing_pairs = [];
     wrong_pair = false;
@@ -95,56 +96,82 @@ function start(){
     shuffle();
 }
 
+/*
+    Randomly chooses indexes from 0 to 15, verifies
+    they do not exist already in a Pair object, and
+    if so, inserts them to the existing_pairs array.
+*/
 function shuffle(){
     let key = 0;
     let length = 0;
 
     while(length < 8) {
-        if(findInMap(key)) {
+        if(existsInPair(key)) {
             key++;
             continue;
         }
         
         let value = -1;
 
-        while(value === -1 || findInMap(value)) value = randnum(key+1, 15);
+        while(value === -1 || 
+            existsInPair(value)) 
+            value = randnum(key+1, 15);
         
-        setRandomImage(key);
-        card_pairs_indeces[key++] = value;
+        createPair(key++, value);
         length++;
     }
-
-    createPairs();
 }
 
-function findInMap(index){
-    let entries = Object.entries(card_pairs_indeces);
-    
-    for(let [k, v] of entries) {
-        if(k === index || v === index) return true;
+/*
+    Checks whether an index is already present in
+    a Pair object or not.
+*/
+function existsInPair(index){
+    for(let pair of existing_pairs) {
+        let c1_id = parseInt(pair.card_one.id);
+        let c2_id = parseInt(pair.card_two.id);
+
+        if(c1_id === index || c2_id === index) return true;
     }
 
     return false;
 }
 
-function setRandomImage(key){
+/*
+    Returns a random image from the card_paths
+    given it is not in the used_images array
+*/
+function setRandomImage() {
     let image_id = randnum(0, 51);
 
-    while(used_images.includes(image_id)){
-        image_id = randnum(0, 51);
-    }
+    while(used_images.includes(image_id)) 
+    image_id = randnum(0, 51);
     
     used_images.push(image_id);
-    keys_and_images[key] = card_paths_array[image_id];
+
+    return card_paths[image_id];
 }
 
+/*
+    Used mainly as an event listener for the imgs
+    in img_array. Whenever a card is clicked, it
+    looks for the image's assigned src (property
+    of the Pair object that the img belongs to)
+    and 'flips' the card (removes itself from the
+    img to avoid it being clicked). 
+    
+    If two cards are flipped at the same time, the 
+    function checkPairs() is activated. If 
+    'wrong_pair' boolean is set to true, it reassigns 
+    the previous_card and actual_card variables to 
+    the back cover of the cards and adds flipCard()
+    as an event listener.
+*/
 function flipCard(){ 
-    //let back_cover = back_cover_path.replace('.', '');
-    let card_id = parseInt(this.id);
-    let entries = Object.entries(card_pairs_indeces);
-    let png_id = card_id;
+    let this_id = parseInt(this.id);
+    let this_pair;
 
-    if(wrong_pair){
+    if(wrong_pair) {
         previous_card.src = back_cover_path;
         actual_card.src = back_cover_path;
         actual_card.addEventListener("click", flipCard);
@@ -152,17 +179,22 @@ function flipCard(){
         wrong_pair = false;
     }
 
-    for(let [k, v] of entries) {
-        if(v === png_id) {
-            png_id = k;
-            break;
-        } else if(k === png_id) break;
+    for(let pair of existing_pairs) {
+        if(!pair.found) {
+            let c1_id = parseInt(pair.card_one.id);
+            let c2_id = parseInt(pair.card_two.id);
+
+            if(c1_id === this_id ||
+                c2_id === this_id) {
+                this_pair = pair;
+                break;
+            }
+        }
     }
-        
-    this.src = keys_and_images[png_id];
+
+    this.src = this_pair.src;
     this.removeEventListener("click", flipCard);
     cards_flipped++;
-    
 
     if(cards_flipped % 2 === 0) {
         actual_card = this;
@@ -190,9 +222,8 @@ function checkPairs(){
                 }
 
                 if(cards_flipped === 16) {
-                    play_again = finishGame();
-
-                    if(play_again) start();
+                    if(finishGame()) 
+                        start();
                 }
                 
                 return;
@@ -201,16 +232,11 @@ function checkPairs(){
     }
 }
 
-function createPairs(){
-    let k_and_v = Object.entries(card_pairs_indeces);
-
-    for(let [k, v] of k_and_v) {
-        let pair = {
-            card_one : img_array[k],
-            card_two : img_array[v],
-            found : false
-        }
-
-        existing_pairs.push(pair);
-    }
+function createPair(card_one_id, card_two_id){
+    existing_pairs.push({
+        card_one : img_array[card_one_id],
+        card_two : img_array[card_two_id],
+        src : setRandomImage(),
+        found : false
+    });
 }
