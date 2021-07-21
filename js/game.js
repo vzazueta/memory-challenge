@@ -67,12 +67,93 @@ let start_button = document.getElementById("start-button");
 let img_array = document.getElementsByClassName("card");
 let previous_card, actual_card;
 let wrong_pair;
-let play_again;
 let cards_flipped;
 let used_images;
 let existing_pairs;
+let selected_card;
 
 start_button.addEventListener("click", start);
+
+window.addEventListener("keydown", function(event) {
+    if (event.defaultPrevented)
+      return; // Do nothing if event already handled
+
+    setCardBrightness(100);
+  
+    let id = parseInt(selected_card.id);
+    let line = (id / 4) + 1;
+
+    switch(event.code) {
+        case "ArrowDown":
+            id += 4;
+            
+            if(id > 15) id -= 16;
+            break;
+        case "ArrowUp":
+            id -= 4;
+            
+            if(id < 0) id += 16;
+            break;
+        case "ArrowLeft":
+            switch(line) {
+                case 1:
+                    id--;
+                
+                    if(id < 0) id += 4;
+                    break;
+                case 2:
+                    id--;
+
+                    if(id < 4) id += 4;
+                    break;
+                case 3:
+                    id--;
+
+                    if(id < 8) id += 4;
+                    break;
+                case 4:
+                    id--;
+
+                    if(id < 12) id += 4;
+                    break;
+            }
+
+            break;
+        case "ArrowRight":
+            switch(line) {
+                case 1:
+                    id++;
+                
+                    if(id < 0) id -= 4;
+                    break;
+                case 2:
+                    id++;
+
+                    if(id < 4) id -= 4;
+                    break;
+                case 3:
+                    id++;
+
+                    if(id < 8) id -= 4;
+                    break;
+                case 4:
+                    id++;
+
+                    if(id < 12) id -= 4;
+                    break;
+            }
+
+            break;
+        case "Enter":
+            flipCard();
+        break;
+    }
+
+    selected_card = img_array[id];
+    setCardBrightness(150);
+
+    event.preventDefault();
+});
 
 /* 
     Whenever the 'Start New Game' is clicked or
@@ -82,15 +163,18 @@ start_button.addEventListener("click", start);
 */
 function start() {
     setScoreZero();
+    if(selected_card) setCardBrightness(100);
+    
+    selected_card = img_array[0];
+    setCardBrightness(150);
     cards_flipped = 0;
     used_images = [];
     existing_pairs = [];
     wrong_pair = false;
-    play_again = false;
 
     for(let image of img_array){
         image.src = back_cover_path;
-        image.addEventListener("click", flipCard);
+        //image.addEventListener("click", flipCard);
     }
 
     shuffle();
@@ -174,8 +258,8 @@ function flipCard(){
     if(wrong_pair) {
         previous_card.src = back_cover_path;
         actual_card.src = back_cover_path;
-        actual_card.addEventListener("click", flipCard);
-        previous_card.addEventListener("click", flipCard);
+        //actual_card.addEventListener("click", flipCard);
+        //previous_card.addEventListener("click", flipCard);
         wrong_pair = false;
     }
 
@@ -193,7 +277,7 @@ function flipCard(){
     }
 
     this.src = this_pair.src;
-    this.removeEventListener("click", flipCard);
+    //this.removeEventListener("click", flipCard);
     cards_flipped++;
 
     if(cards_flipped % 2 === 0) {
@@ -230,8 +314,11 @@ function checkPairs(){
                 }
 
                 if(cards_flipped === 16) {
-                    if(finishGame())
+                    setCardBrightness(100);
+
+                    if(finishGame()){
                         start();
+                    }
                 }
                 
                 return;
@@ -251,4 +338,8 @@ function createPair(card_one_id, card_two_id){
         src : setRandomImage(),
         found : false
     });
+}
+
+function setCardBrightness(percent){
+    selected_card.style.filter = "brightness(" + percent + "%)";
 }
