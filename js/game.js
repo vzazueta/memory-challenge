@@ -81,7 +81,7 @@ window.addEventListener("keydown", function(event) {
     setCardBrightness(100);
   
     let id = parseInt(selected_card.id);
-    let line = (id / 4) + 1;
+    let line = parseInt((id / 4) + 1);
 
     switch(event.code) {
         case "ArrowDown":
@@ -124,28 +124,28 @@ window.addEventListener("keydown", function(event) {
                 case 1:
                     id++;
                 
-                    if(id < 0) id -= 4;
+                    if(id > 3) id -= 4;
                     break;
                 case 2:
                     id++;
 
-                    if(id < 4) id -= 4;
+                    if(id > 7) id -= 4;
                     break;
                 case 3:
                     id++;
 
-                    if(id < 8) id -= 4;
+                    if(id > 11) id -= 4;
                     break;
                 case 4:
                     id++;
 
-                    if(id < 12) id -= 4;
+                    if(id > 15) id -= 4;
                     break;
             }
 
             break;
         case "Enter":
-            flipCard();
+            flipCard(selected_card);
         break;
     }
 
@@ -164,7 +164,7 @@ window.addEventListener("keydown", function(event) {
 function start() {
     setScoreZero();
     if(selected_card) setCardBrightness(100);
-    
+
     selected_card = img_array[0];
     setCardBrightness(150);
     cards_flipped = 0;
@@ -251,9 +251,9 @@ function setRandomImage() {
     the back cover of the cards and adds flipCard()
     as an event listener.
 */
-function flipCard(){ 
-    let this_id = parseInt(this.id);
-    let this_pair;
+function flipCard(card){ 
+    let card_id = parseInt(card.id);
+    let card_pair;
 
     if(wrong_pair) {
         previous_card.src = back_cover_path;
@@ -268,22 +268,22 @@ function flipCard(){
             let c1_id = parseInt(pair.card_one.id);
             let c2_id = parseInt(pair.card_two.id);
 
-            if(c1_id === this_id ||
-                c2_id === this_id) {
-                this_pair = pair;
+            if(c1_id === card_id ||
+                c2_id === card_id) {
+                card_pair = pair;
                 break;
             }
         }
     }
 
-    this.src = this_pair.src;
+    card.src = card_pair.src;
     //this.removeEventListener("click", flipCard);
     cards_flipped++;
 
     if(cards_flipped % 2 === 0) {
-        actual_card = this;
+        actual_card = card;
         checkPairs();
-    } else previous_card = this;
+    } else previous_card = card;
 }
 
 /*
