@@ -70,6 +70,7 @@ let wrong_pair;
 let cards_flipped;
 let used_images;
 let existing_pairs;
+let found_pairs;
 let selected_card;
 
 start_button.addEventListener("click", start);
@@ -79,42 +80,87 @@ window.addEventListener("keydown", function(event) {
       return; // Do nothing if event already handled
 
     setCardBrightness(100);
-  
+
+    let direction = event.code;
     let id = parseInt(selected_card.id);
     let line = parseInt((id / 4) + 1);
+    let prev_id = -1;
+    let actual_id = -1;
 
-    switch(event.code) {
+    if(previous_card) prev_id = parseInt(previous_card.id);
+    if(actual_card) actual_id = parseInt(actual_card.id);
+
+    print(prev_id+", "+actual_id);
+
+    switch(direction) {
         case "ArrowDown":
             id += 4;
             
             if(id > 15) id -= 16;
+
+            while(id === prev_id ||
+                id === actual_id){
+                    id += 4;
+                    if(id > 15) id -= 16;
+            }
+
             break;
         case "ArrowUp":
             id -= 4;
-            
             if(id < 0) id += 16;
+
+            while(id === prev_id ||
+                id === actual_id){
+                    id -= 4;
+                    if(id < 0) id += 16;
+            }
+
             break;
         case "ArrowLeft":
             switch(line) {
                 case 1:
                     id--;
-                
                     if(id < 0) id += 4;
+
+                    while(id === prev_id ||
+                        id === actual_id){
+                            id--;
+                            if(id < 0) id += 4;
+                    }
+
                     break;
                 case 2:
                     id--;
-
                     if(id < 4) id += 4;
+
+                    while(id === prev_id ||
+                        id === actual_id){
+                            id--;
+                            if(id < 4) id += 4;
+                    }
+
                     break;
                 case 3:
                     id--;
-
                     if(id < 8) id += 4;
+
+                    while(id === prev_id ||
+                        id === actual_id){
+                            id--;
+                            if(id < 8) id += 4;
+                    }
+
                     break;
                 case 4:
                     id--;
-
                     if(id < 12) id += 4;
+
+                    while(id === prev_id ||
+                        id === actual_id){
+                            id--;
+                            if(id < 12) id += 4;
+                    }
+
                     break;
             }
 
@@ -123,23 +169,47 @@ window.addEventListener("keydown", function(event) {
             switch(line) {
                 case 1:
                     id++;
-                
                     if(id > 3) id -= 4;
+
+                    while(id === prev_id ||
+                        id === actual_id){
+                            id++;
+                            if(id > 3) id -= 4;
+                    }
+
                     break;
                 case 2:
                     id++;
-
                     if(id > 7) id -= 4;
+
+                    while(id === prev_id ||
+                        id === actual_id){
+                            id++;
+                            if(id > 7) id -= 4;
+                    }
+
                     break;
                 case 3:
                     id++;
-
                     if(id > 11) id -= 4;
+
+                    while(id === prev_id ||
+                        id === actual_id){
+                            id++;
+                            if(id > 11) id -= 4;
+                    }
+
                     break;
                 case 4:
                     id++;
-
                     if(id > 15) id -= 4;
+
+                    while(id === prev_id ||
+                        id === actual_id){
+                            id++;
+                            if(id > 15) id -= 4;
+                    }
+
                     break;
             }
 
@@ -148,6 +218,10 @@ window.addEventListener("keydown", function(event) {
             flipCard(selected_card);
         break;
     }
+
+    //while(isFound(id)) {
+    //    id = findBestCard(id, direction);
+    //}
 
     selected_card = img_array[id];
     setCardBrightness(150);
@@ -164,17 +238,18 @@ window.addEventListener("keydown", function(event) {
 function start() {
     setScoreZero();
     if(selected_card) setCardBrightness(100);
-
     selected_card = img_array[0];
     setCardBrightness(150);
     cards_flipped = 0;
     used_images = [];
     existing_pairs = [];
+    found_pairs = [];
     wrong_pair = false;
+    previous_card = null;
+    actual_card = null;
 
     for(let image of img_array){
         image.src = back_cover_path;
-        //image.addEventListener("click", flipCard);
     }
 
     shuffle();
@@ -229,7 +304,7 @@ function setRandomImage() {
     let image_id = randnum(0, 51);
 
     while(used_images.includes(image_id)) 
-    image_id = randnum(0, 51);
+        image_id = randnum(0, 51);
     
     used_images.push(image_id);
 
@@ -257,9 +332,14 @@ function flipCard(card){
 
     if(wrong_pair) {
         previous_card.src = back_cover_path;
+        previous_card = null;
+
         actual_card.src = back_cover_path;
-        //actual_card.addEventListener("click", flipCard);
-        //previous_card.addEventListener("click", flipCard);
+        actual_card = null;
+
+        found_pairs.pop();
+        found_pairs.pop();
+        
         wrong_pair = false;
     }
 
@@ -282,8 +362,12 @@ function flipCard(card){
 
     if(cards_flipped % 2 === 0) {
         actual_card = card;
+        found_pairs.push(parseInt(card.id));
         checkPairs();
-    } else previous_card = card;
+    } else {
+        previous_card = card;
+        found_pairs.push(parseInt(card.id));
+    }
 }
 
 /*
@@ -306,9 +390,11 @@ function checkPairs(){
                 if(previous_card === c1 ||
                     previous_card === c2) {
                     pair.found = true;
+                    //found_pairs.push(parseInt(c1.id));
+                    //found_pairs.push(parseInt(c2.id));
                     changeScore(true);
                 } else {
-                    cards_flipped-=2;
+                    cards_flipped -= 2;
                     wrong_pair = true;
                     changeScore(false);
                 }
@@ -342,4 +428,28 @@ function createPair(card_one_id, card_two_id){
 
 function setCardBrightness(percent){
     selected_card.style.filter = "brightness(" + percent + "%)";
+}
+
+function isFound(id){
+    return found_pairs.includes(id);
+}
+
+function findBestCard(id, direction){
+    switch(direction) {
+        case "ArrowDown":
+            
+            break;
+        
+        case "ArrowUp":
+
+            break;
+
+        case "ArrowRight":
+
+            break;
+
+        case "ArrowLeft":
+
+            break;
+    }
 }
