@@ -7,7 +7,7 @@ let wrong_pair;
 let cards_flipped;
 let used_images;
 let existing_pairs;
-let found_pairs;
+let flipped_cards;
 let selected_card;
 
 start_button.addEventListener("click", start);
@@ -24,11 +24,11 @@ function start() {
     setScoreZero();
     if(selected_card) setCardBrightness(100);
     selected_card = img_array[0];
-    setCardBrightness(150);
+    setCardBrightness(115);
     cards_flipped = 0;
     used_images = [];
     existing_pairs = [];
-    found_pairs = [];
+    flipped_cards = [];
     wrong_pair = false;
     previous_card = null;
     actual_card = null;
@@ -122,8 +122,8 @@ function flipCard(card){
         actual_card.src = back_cover_path;
         actual_card = null;
 
-        found_pairs.pop();
-        found_pairs.pop();
+        flipped_cards.pop();
+        flipped_cards.pop();
         
         wrong_pair = false;
     }
@@ -147,11 +147,11 @@ function flipCard(card){
 
     if(cards_flipped % 2 === 0) {
         actual_card = card;
-        found_pairs.push(parseInt(card.id));
+        flipped_cards.push(parseInt(card.id));
         checkPairs();
     } else {
         previous_card = card;
-        found_pairs.push(parseInt(card.id));
+        flipped_cards.push(parseInt(card.id));
     }
 }
 
@@ -175,8 +175,6 @@ function checkPairs(){
                 if(previous_card === c1 ||
                     previous_card === c2) {
                     pair.found = true;
-                    //found_pairs.push(parseInt(c1.id));
-                    //found_pairs.push(parseInt(c2.id));
                     changeScore(true);
                 } else {
                     cards_flipped -= 2;
@@ -294,8 +292,8 @@ function move(event) {
 
     selected_card = img_array[id];
 
-    if(!isFound(id)) setCardBrightness(130);
-    else setCardBrightness(70);
+    if(!isFound(id)) setCardBrightness(115);
+    else setCardBrightness(85);
     
     event.preventDefault();
 }
@@ -305,5 +303,5 @@ function setCardBrightness(percent){
 }
 
 function isFound(id){
-    return found_pairs.includes(id);
+    return flipped_cards.includes(id);
 }
