@@ -8,9 +8,12 @@ let cards_flipped;
 let used_images;
 let existing_pairs;
 let flipped_cards;
-let selected_card;
+let selected_component
+let gameStarted = false;
 
-start_button.addEventListener("click", start);
+//start_button.addEventListener("keydown", start);
+selected_component = start_button;
+setComponentBrightness(75);
 
 window.addEventListener("keydown", move);
 
@@ -22,13 +25,14 @@ window.addEventListener("keydown", move);
 */
 function start() {
     setScoreZero();
-    if(selected_card) setCardBrightness(100);
-    selected_card = img_array[0];
-    setCardBrightness(115);
+    if(selected_component) setComponentBrightness(100);
+    selected_component = img_array[0];
+    setComponentBrightness(75);
     cards_flipped = 0;
     used_images = [];
     existing_pairs = [];
     flipped_cards = [];
+    gameStarted = true;
     wrong_pair = false;
     previous_card = null;
     actual_card = null;
@@ -38,6 +42,135 @@ function start() {
     }
 
     shuffle();
+}
+
+function move(event) {
+    // Do nothing if event already handled
+    if (event.defaultPrevented) return;
+
+    let id, line;
+    let action = event.code;
+    let componentIsStartButton = selected_component === start_button;
+    
+    if(componentIsStartButton){
+        if(gameStarted){
+            switch(action) {
+                case "Enter":
+                    start();
+                    return;
+                case "ArrowRight":
+                    id = 12;
+                    break;
+                case "ArrowLeft":
+                    id = 15;
+                    break;
+                case "ArrowUp":
+                    id = 3;
+                    break;
+                case "ArrowDown":
+                    id = 0;
+                    break;
+                default:
+                    return; 
+            }
+        } else if(action === "Enter") {
+            start();
+            return;
+        } else {
+            alert("Press 'Enter' to start");
+            return;  
+        }
+    } else {
+        id = parseInt(selected_component.id);
+        line = parseInt((id / 4) + 1);
+
+        switch(action) {
+            case "ArrowDown":
+                id += 4;
+                if(id > 15) id -= 16;
+
+                break;
+            case "ArrowUp":
+                id -= 4;
+                if(id < 0) id += 16;
+
+                break;
+            case "ArrowLeft":
+                switch(line) {
+                    case 1:
+                        id--;
+                        if(id < 0) id += 4;
+
+                        break;
+                    case 2:
+                        id--;
+                        if(id < 4) id += 4;
+
+                        break;
+                    case 3:
+                        id--;
+                        if(id < 8) id += 4;
+
+                        break;
+                    case 4:
+                        id--;
+                        if(id < 12) {
+                            setComponentBrightness(100);
+                            selected_component = start_button;
+                            setComponentBrightness(75);
+                            return;
+                        }
+
+                        break;
+                }
+
+                break;
+            case "ArrowRight":
+                switch(line) {
+                    case 1:
+                        id++;
+                        if(id > 3) id -= 4;
+
+                        break;
+                    case 2:
+                        id++;
+                        if(id > 7) id -= 4;
+
+                        break;
+                    case 3:
+                        id++;
+                        if(id > 11) id -= 4;
+
+                        break;
+                    case 4:
+                        id++;
+                        if(id > 15) {
+                            setComponentBrightness(100);
+                            selected_component = start_button;
+                            setComponentBrightness(75);
+                            return;
+                        }
+
+                        break;
+                }
+
+                break;
+            case "Enter":
+                if(!isFound(id)) flipCard(selected_component);
+                else alert("Already flipped!");
+                break;
+            default:
+                return; 
+        }
+    }
+
+    setComponentBrightness(100);
+
+    selected_component = img_array[id];
+
+    setComponentBrightness(75);
+    
+    event.preventDefault();
 }
 
 /*
@@ -183,7 +316,7 @@ function checkPairs(){
                 }
 
                 if(cards_flipped === 16) {
-                    setCardBrightness(100);
+                    setComponentBrightness(100);
 
                     if(finishGame()){
                         start();
@@ -209,97 +342,8 @@ function createPair(card_one_id, card_two_id){
     });
 }
 
-function move(event) {
-    if (event.defaultPrevented)
-      return; // Do nothing if event already handled
-
-    setCardBrightness(100);
-
-    let direction = event.code;
-    let id = parseInt(selected_card.id);
-    let line = parseInt((id / 4) + 1);
-
-    switch(direction) {
-        case "ArrowDown":
-            id += 4;
-            if(id > 15) id -= 16;
-
-            break;
-        case "ArrowUp":
-            id -= 4;
-            if(id < 0) id += 16;
-
-            break;
-        case "ArrowLeft":
-            switch(line) {
-                case 1:
-                    id--;
-                    if(id < 0) id += 4;
-
-                    break;
-                case 2:
-                    id--;
-                    if(id < 4) id += 4;
-
-                    break;
-                case 3:
-                    id--;
-                    if(id < 8) id += 4;
-
-                    break;
-                case 4:
-                    id--;
-                    if(id < 12) id += 4;
-
-                    break;
-            }
-
-            break;
-        case "ArrowRight":
-            switch(line) {
-                case 1:
-                    id++;
-                    if(id > 3) id -= 4;
-
-                    break;
-                case 2:
-                    id++;
-                    if(id > 7) id -= 4;
-
-                    break;
-                case 3:
-                    id++;
-                    if(id > 11) id -= 4;
-
-                    break;
-                case 4:
-                    id++;
-                    if(id > 15) id -= 4;
-
-                    break;
-            }
-
-            break;
-        case "Enter":
-            if(!isFound(id)) flipCard(selected_card);
-            else alert("Already flipped!");
-        break;
-    }
-
-    //while(isFound(id)) {
-    //    id = findBestCard(id, direction);
-    //}
-
-    selected_card = img_array[id];
-
-    if(!isFound(id)) setCardBrightness(115);
-    else setCardBrightness(85);
-    
-    event.preventDefault();
-}
-
-function setCardBrightness(percent){
-    selected_card.style.filter = "brightness(" + percent + "%)";
+function setComponentBrightness(percent){
+    selected_component.style.filter = "brightness(" + percent + "%)";
 }
 
 function isFound(id){
