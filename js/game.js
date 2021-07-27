@@ -209,10 +209,9 @@ function existsInPair(index){
     given it is not in the used_images array
 */
 function setRandomImage() {
-    let image_id = randnum(0, 51);
+    let image_id;
 
-    while(used_images.includes(image_id)) 
-        image_id = randnum(0, 51);
+    while(used_images.includes(image_id = randnum(0, 51)));
     
     used_images.push(image_id);
 
@@ -265,7 +264,6 @@ function flipCard(card){
     }
 
     card.src = card_pair.src;
-    //this.removeEventListener("click", flipCard);
     cards_flipped++;
 
     if(cards_flipped % 2 === 0) {
