@@ -8,13 +8,13 @@ let cards_flipped;
 let used_images;
 let existing_pairs;
 let flipped_cards;
-let selected_component
+
+let selected_component = start_button;
 let gameStarted = false;
+let DEFAULT_BRIGHTNESS = 100;
+let SELECTED_BRIGHTNESS = 70;
 
-//start_button.addEventListener("keydown", start);
-selected_component = start_button;
-setComponentBrightness(75);
-
+setComponentBrightness(SELECTED_BRIGHTNESS);
 window.addEventListener("keydown", move);
 
 /* 
@@ -24,10 +24,8 @@ window.addEventListener("keydown", move);
     variable to default or zero.
 */
 function start() {
+    reinstateSelectedComponent(img_array[0]);
     setScoreZero();
-    if(selected_component) setComponentBrightness(100);
-    selected_component = img_array[0];
-    setComponentBrightness(75);
     cards_flipped = 0;
     used_images = [];
     existing_pairs = [];
@@ -115,9 +113,7 @@ function move(event) {
                     case 4:
                         id--;
                         if(id < 12) {
-                            setComponentBrightness(100);
-                            selected_component = start_button;
-                            setComponentBrightness(75);
+                            reinstateSelectedComponent(start_button);
                             return;
                         }
 
@@ -145,9 +141,7 @@ function move(event) {
                     case 4:
                         id++;
                         if(id > 15) {
-                            setComponentBrightness(100);
-                            selected_component = start_button;
-                            setComponentBrightness(75);
+                            reinstateSelectedComponent(start_button);
                             return;
                         }
 
@@ -164,11 +158,7 @@ function move(event) {
         }
     }
 
-    setComponentBrightness(100);
-
-    selected_component = img_array[id];
-
-    setComponentBrightness(75);
+    reinstateSelectedComponent(img_array[id]);
     
     event.preventDefault();
 }
@@ -316,7 +306,7 @@ function checkPairs(){
                 }
 
                 if(cards_flipped === 16) {
-                    setComponentBrightness(100);
+                    setComponentBrightness(DEFAULT_BRIGHTNESS);
 
                     if(finishGame()){
                         start();
@@ -348,4 +338,10 @@ function setComponentBrightness(percent){
 
 function isFound(id){
     return flipped_cards.includes(id);
+}
+
+function reinstateSelectedComponent(component){
+    setComponentBrightness(DEFAULT_BRIGHTNESS);
+    selected_component = component;
+    setComponentBrightness(SELECTED_BRIGHTNESS);
 }
