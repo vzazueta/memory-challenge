@@ -42,6 +42,10 @@ function start() {
     shuffle();
 }
 
+/*
+    Decides which component is
+    selected and dimmed or enlightned
+*/
 function move(event) {
     // Do nothing if event already handled
     if (event.defaultPrevented) return;
@@ -169,23 +173,23 @@ function move(event) {
     if so, inserts them to the existing_pairs array.
 */
 function shuffle(){
-    let key = 0;
-    let length = 0;
+    let i = 0;
+    let size = 0;
 
-    while(length < 8) {
-        if(existsInPair(key)) {
-            key++;
+    while(size < 8) {
+        if(existsInPair(i)) {
+            i++;
             continue;
         }
         
-        let value = -1;
+        let j = -1;
 
-        while(value === -1 || 
-            existsInPair(value)) 
-            value = randnum(key+1, 15);
+        while(j === -1 || 
+            existsInPair(j)) 
+            j = randnum(i+1, 15);
         
-        createPair(key++, value);
-        length++;
+        createPair(i++, j);
+        size++;
     }
 }
 
@@ -237,31 +241,9 @@ function flipCard(card){
     let card_id = parseInt(card.id);
     let card_pair;
 
-    if(wrong_pair) {
-        previous_card.src = back_cover_path;
-        previous_card = null;
+    checkIfWrongPair();
 
-        actual_card.src = back_cover_path;
-        actual_card = null;
-
-        flipped_cards.pop();
-        flipped_cards.pop();
-        
-        wrong_pair = false;
-    }
-
-    for(let pair of existing_pairs) {
-        if(!pair.found) {
-            let c1_id = parseInt(pair.card_one.id);
-            let c2_id = parseInt(pair.card_two.id);
-
-            if(c1_id === card_id ||
-                c2_id === card_id) {
-                card_pair = pair;
-                break;
-            }
-        }
-    }
+    card_pair = lookForCardPair(card_id);
 
     card.src = card_pair.src;
     cards_flipped++;
@@ -269,7 +251,7 @@ function flipCard(card){
     if(cards_flipped % 2 === 0) {
         actual_card = card;
         flipped_cards.push(parseInt(card.id));
-        checkPairs();
+        checkPair(card_pair);
     } else {
         previous_card = card;
         flipped_cards.push(parseInt(card.id));
@@ -284,37 +266,68 @@ function flipCard(card){
     When the 16 cards are flipped, the finishGame()
     function is activated.
 */
-function checkPairs(){
-    for(let pair of existing_pairs) {
-        if(!pair.found) {
-            let c1 = pair.card_one;
-            let c2 = pair.card_two;
+function checkPair(pair){
+    if(!pair.found) {
+        let c1 = pair.card_one;
+        let c2 = pair.card_two;
+        
+        if(previous_card === c1 ||
+            previous_card === c2) {
+            pair.found = true;
+            changeScore(true);
+        } else {
+            cards_flipped -= 2;
+            wrong_pair = true;
+            changeScore(false);
+        }
 
-            if(actual_card === c1 ||
-                actual_card === c2) {
-                
-                if(previous_card === c1 ||
-                    previous_card === c2) {
-                    pair.found = true;
-                    changeScore(true);
-                } else {
-                    cards_flipped -= 2;
-                    wrong_pair = true;
-                    changeScore(false);
-                }
+        if(cards_flipped === 16) {
+            setComponentBrightness(DEFAULT_BRIGHTNESS);
 
-                if(cards_flipped === 16) {
-                    setComponentBrightness(DEFAULT_BRIGHTNESS);
-
-                    if(finishGame()){
-                        start();
-                    }
-                }
-                
-                return;
+            if(finishGame()){
+                start();
             }
         }
     }
+}
+
+/*
+    if wrong_pair boolean is set to 'true',
+    it resets the previous and actual card
+    values to null
+*/
+function checkIfWrongPair() {
+    if(wrong_pair) {
+        previous_card.src = back_cover_path;
+        previous_card = null;
+
+        actual_card.src = back_cover_path;
+        actual_card = null;
+
+        flipped_cards.pop();
+        flipped_cards.pop();
+        
+        wrong_pair = false;
+    }
+}
+
+/*
+    
+*/
+function lookForCardPair(id) {
+    for(let pair of existing_pairs) {
+        if(!pair.found) {
+            let c1_id = parseInt(pair.card_one.id);
+            let c2_id = parseInt(pair.card_two.id);
+
+            if(c1_id === id ||
+                c2_id === id) {
+                return pair;
+            }
+        }
+    }
+
+    return null;
 }
 
 /*
