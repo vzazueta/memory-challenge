@@ -231,13 +231,13 @@ function setRandomImage() {
     img to avoid it being clicked). 
     
     If two cards are flipped at the same time, the 
-    function checkPairs() is activated. If 
+    function checkPair() is activated. If 
     'wrong_pair' boolean is set to true, it reassigns 
     the previous_card and actual_card variables to 
     the back cover of the cards and adds flipCard()
     as an event listener.
 */
-function flipCard(card){ 
+function flipCard(card) {
     let card_id = parseInt(card.id);
     let card_pair;
 
